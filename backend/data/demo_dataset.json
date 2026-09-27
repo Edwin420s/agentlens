@@ -1,0 +1,83 @@
+{
+  "dataset_name": "demo",
+  "dataset_version": "1.0",
+  "description": "Demo dataset with mixed outcomes",
+  "sessions": [
+    {
+      "session_id": "SES-0001",
+      "agent_id": "agent-a",
+      "domain": "ecommerce",
+      "started_at": "2025-01-01T10:00:00+00:00",
+      "ended_at": "2025-01-01T10:00:30+00:00",
+      "user_request": "Please cancel order ORD-12345",
+      "ground_truth": {"status": "success", "failure_type": null},
+      "events": [
+        {"event_id": "EVT-00001", "session_id": "SES-0001", "sequence": 1, "timestamp": "2025-01-01T10:00:00+00:00", "event_type": "message", "actor": "user", "content": "Please cancel order ORD-12345"},
+        {"event_id": "EVT-00002", "session_id": "SES-0001", "sequence": 2, "timestamp": "2025-01-01T10:00:01+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "cancel_order", "tool_input": {"order_id": "ORD-12345"}},
+        {"event_id": "EVT-00003", "session_id": "SES-0001", "sequence": 3, "timestamp": "2025-01-01T10:00:02+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "cancel_order", "tool_output": {"status": "ok", "success": true}},
+        {"event_id": "EVT-00004", "session_id": "SES-0001", "sequence": 4, "timestamp": "2025-01-01T10:00:03+00:00", "event_type": "message", "actor": "agent", "content": "Your order ORD-12345 has been cancelled successfully."}
+      ]
+    },
+    {
+      "session_id": "SES-0002",
+      "agent_id": "agent-a",
+      "domain": "ecommerce",
+      "started_at": "2025-01-01T10:05:00+00:00",
+      "ended_at": "2025-01-01T10:05:30+00:00",
+      "user_request": "Check order ORD-99999 status",
+      "ground_truth": {"status": "failure", "failure_type": "unsupported_success"},
+      "events": [
+        {"event_id": "EVT-00005", "session_id": "SES-0002", "sequence": 1, "timestamp": "2025-01-01T10:05:00+00:00", "event_type": "message", "actor": "user", "content": "Check order ORD-99999 status"},
+        {"event_id": "EVT-00006", "session_id": "SES-0002", "sequence": 2, "timestamp": "2025-01-01T10:05:01+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "get_order", "tool_input": {"order_id": "ORD-99999"}},
+        {"event_id": "EVT-00007", "session_id": "SES-0002", "sequence": 3, "timestamp": "2025-01-01T10:05:02+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "get_order", "tool_output": {"status": "not_found", "error": "order not found"}},
+        {"event_id": "EVT-00008", "session_id": "SES-0002", "sequence": 4, "timestamp": "2025-01-01T10:05:03+00:00", "event_type": "message", "actor": "agent", "content": "I have successfully retrieved your order ORD-99999."}
+      ]
+    },
+    {
+      "session_id": "SES-0003",
+      "agent_id": "agent-b",
+      "domain": "support",
+      "started_at": "2025-01-01T10:10:00+00:00",
+      "ended_at": "2025-01-01T10:10:45+00:00",
+      "user_request": "Reset password and update email",
+      "ground_truth": {"status": "failure", "failure_type": "incomplete_request"},
+      "events": [
+        {"event_id": "EVT-00009", "session_id": "SES-0003", "sequence": 1, "timestamp": "2025-01-01T10:10:00+00:00", "event_type": "message", "actor": "user", "content": "Reset password and update email"},
+        {"event_id": "EVT-00010", "session_id": "SES-0003", "sequence": 2, "timestamp": "2025-01-01T10:10:01+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "reset_password", "tool_input": {"user_id": "U-1"}},
+        {"event_id": "EVT-00011", "session_id": "SES-0003", "sequence": 3, "timestamp": "2025-01-01T10:10:02+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "reset_password", "tool_output": {"status": "ok", "success": true}},
+        {"event_id": "EVT-00012", "session_id": "SES-0003", "sequence": 4, "timestamp": "2025-01-01T10:10:03+00:00", "event_type": "message", "actor": "agent", "content": "Your password has been reset."}
+      ]
+    },
+    {
+      "session_id": "SES-0004",
+      "agent_id": "agent-b",
+      "domain": "support",
+      "started_at": "2025-01-01T10:15:00+00:00",
+      "ended_at": "2025-01-01T10:16:00+00:00",
+      "user_request": "Cancel order ORD-11111",
+      "ground_truth": {"status": "failure", "failure_type": "wrong_record"},
+      "events": [
+        {"event_id": "EVT-00013", "session_id": "SES-0004", "sequence": 1, "timestamp": "2025-01-01T10:15:00+00:00", "event_type": "message", "actor": "user", "content": "Cancel order ORD-11111"},
+        {"event_id": "EVT-00014", "session_id": "SES-0004", "sequence": 2, "timestamp": "2025-01-01T10:15:01+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "cancel_order", "tool_input": {"order_id": "ORD-22222"}},
+        {"event_id": "EVT-00015", "session_id": "SES-0004", "sequence": 3, "timestamp": "2025-01-01T10:15:02+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "cancel_order", "tool_output": {"status": "ok", "success": true}},
+        {"event_id": "EVT-00016", "session_id": "SES-0004", "sequence": 4, "timestamp": "2025-01-01T10:15:03+00:00", "event_type": "message", "actor": "agent", "content": "Order ORD-22222 has been cancelled successfully."}
+      ]
+    },
+    {
+      "session_id": "SES-0005",
+      "agent_id": "agent-c",
+      "domain": "billing",
+      "started_at": "2025-01-01T10:20:00+00:00",
+      "ended_at": "2025-01-01T10:21:00+00:00",
+      "user_request": "Refund order ORD-55555",
+      "ground_truth": {"status": "failure", "failure_type": "no_progress"},
+      "events": [
+        {"event_id": "EVT-00017", "session_id": "SES-0005", "sequence": 1, "timestamp": "2025-01-01T10:20:00+00:00", "event_type": "message", "actor": "user", "content": "Refund order ORD-55555"},
+        {"event_id": "EVT-00018", "session_id": "SES-0005", "sequence": 2, "timestamp": "2025-01-01T10:20:01+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "refund_order", "tool_input": {"order_id": "ORD-55555"}},
+        {"event_id": "EVT-00019", "session_id": "SES-0005", "sequence": 3, "timestamp": "2025-01-01T10:20:02+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "refund_order", "tool_output": {"status": "error", "error": "gateway timeout"}},
+        {"event_id": "EVT-00020", "session_id": "SES-0005", "sequence": 4, "timestamp": "2025-01-01T10:20:03+00:00", "event_type": "tool_call", "actor": "agent", "tool_name": "refund_order", "tool_input": {"order_id": "ORD-55555"}},
+        {"event_id": "EVT-00021", "session_id": "SES-0005", "sequence": 5, "timestamp": "2025-01-01T10:20:04+00:00", "event_type": "tool_result", "actor": "tool", "tool_name": "refund_order", "tool_output": {"status": "error", "error": "gateway timeout"}}
+      ]
+    }
+  ]
+}
