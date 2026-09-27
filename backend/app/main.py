@@ -65,13 +65,25 @@ async def agentlens_error_handler(request: Request, exc: AgentLensError):
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    from fastapi.encoders import jsonable_encoder
+
+    sanitized_errors = []
+    for err in exc.errors():
+        clean_err = dict(err)
+        if "ctx" in clean_err and isinstance(clean_err["ctx"], dict):
+            clean_err["ctx"] = {
+                k: str(v) if isinstance(v, Exception) else v
+                for k, v in clean_err["ctx"].items()
+            }
+        sanitized_errors.append(jsonable_encoder(clean_err))
+
     payload = APIResponse(
         success=False,
         data=None,
         error=APIError(
             code="VALIDATION_ERROR",
             message="Request validation failed.",
-            details=exc.errors(),
+            details=sanitized_errors,
         ),
     )
     return JSONResponse(status_code=422, content=payload.model_dump())
