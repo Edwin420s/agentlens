@@ -28,13 +28,16 @@ async def list_sessions(
 
 
 @router.get("/sessions/{session_id}")
-async def get_session(session_id: str):
-    s = await sess_repo.get_session(session_id)
+async def get_session(session_id: str, investigation_id: str | None = Query(default=None)):
+    s = await sess_repo.get_session(session_id, investigation_id)
     if not s:
         raise NotFoundError(f"Session {session_id} not found.")
 
-    events = await ev_repo.list_events_for_session(session_id)
+    inv_id = s.get("investigation_id")
+    events = await ev_repo.list_events_for_session(session_id, inv_id)
     failures = await fail_repo.list_failures_for_session(session_id)
+    if inv_id:
+        failures = [f for f in failures if f.get("investigation_id") == inv_id]
     ai = await ai_repo.get_analysis_for_session(session_id)
 
     payload = {

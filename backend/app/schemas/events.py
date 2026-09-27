@@ -16,6 +16,11 @@ class AgentEvent(AgentLensBaseModel):
         pattern=r"^SES-[0-9]{4,}$"
     )
 
+    investigation_id: str | None = Field(
+        default=None,
+        pattern=r"^INV-[0-9]{4,}$"
+    )
+
     sequence: int = Field(ge=1)
 
     timestamp: datetime

@@ -42,6 +42,14 @@ async def import_dataset(dataset: DatasetImport, target_investigation_id: str | 
         inv_id = inv["investigation_id"]
         await inv_repo.update_investigation(inv_id, {"status": "running"})
 
+    # Clean up prior records for this investigation to allow safe re-ingestion
+    await mongo.col_sessions().delete_many({"investigation_id": inv_id})
+    await mongo.col_events().delete_many({"investigation_id": inv_id})
+    await mongo.col_failures().delete_many({"investigation_id": inv_id})
+    await mongo.col_failure_groups().delete_many({"investigation_id": inv_id})
+    await mongo.col_ai_analysis().delete_many({"investigation_id": inv_id})
+    await mongo.get_database()["evaluation_labels"].delete_many({"investigation_id": inv_id})
+
     session_docs: list[dict] = []
     event_docs: list[dict] = []
     session_raw_events: dict[str, list[dict]] = {}
@@ -74,6 +82,7 @@ async def import_dataset(dataset: DatasetImport, target_investigation_id: str | 
 
         for e in ds_session.events:
             ev_doc = e.model_dump()
+            ev_doc["investigation_id"] = inv_id
             event_docs.append(ev_doc)
 
     await sess_repo.bulk_insert_sessions(session_docs)
@@ -119,7 +128,7 @@ async def import_dataset(dataset: DatasetImport, target_investigation_id: str | 
         for f in all_failures:
             by_session.setdefault(f["session_id"], []).append(f["failure_id"])
         for sid, fids in by_session.items():
-            await sess_repo.update_session(sid, {"failure_ids": fids})
+            await sess_repo.update_session(sid, {"failure_ids": fids}, inv_id)
 
     groups = await group_failures(inv_id, all_failures)
 

@@ -11,8 +11,11 @@ async def bulk_insert_sessions(docs: list[dict]) -> None:
         await mongo.col_sessions().insert_many(docs, ordered=False)
 
 
-async def get_session(session_id: str) -> dict | None:
-    doc = await mongo.col_sessions().find_one({"session_id": session_id})
+async def get_session(session_id: str, investigation_id: str | None = None) -> dict | None:
+    q: dict = {"session_id": session_id}
+    if investigation_id:
+        q["investigation_id"] = investigation_id
+    doc = await mongo.col_sessions().find_one(q, sort=[("_id", -1)])
     return serialize(doc) if doc else None
 
 
@@ -32,10 +35,11 @@ async def count_sessions(investigation_id: str) -> int:
     )
 
 
-async def update_session(session_id: str, updates: dict) -> None:
-    await mongo.col_sessions().update_one(
-        {"session_id": session_id}, {"$set": updates}
-    )
+async def update_session(session_id: str, updates: dict, investigation_id: str | None = None) -> None:
+    q: dict = {"session_id": session_id}
+    if investigation_id:
+        q["investigation_id"] = investigation_id
+    await mongo.col_sessions().update_many(q, {"$set": updates})
 
 
 async def iter_sessions(investigation_id: str):
