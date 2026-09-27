@@ -1,0 +1,38 @@
+# Environment and Virtualenvs
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+ENV/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Database & Runtime
+.mongo_data/
+*.log
+
+# Reference Folder (local only)
+agentlens/
+
+# OS
+.DS_Store
+Thumbs.db
