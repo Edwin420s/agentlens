@@ -28,7 +28,7 @@ async function request(path, options = {}) {
 
 export const api = {
   // Health
-  health: () => request('/../../health'),
+  health: () => request('/health'),
 
   // Investigations
   listInvestigations: (limit = 100, offset = 0) =>

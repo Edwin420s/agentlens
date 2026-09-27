@@ -126,7 +126,8 @@ def test_endpoints_end_to_end():
 
         export_csv = client.get(f"/api/v1/investigations/{inv_id}/export?format=csv")
         assert export_csv.status_code == 200
-        assert export_csv.json()["data"]["format"] == "csv"
+        assert "text/csv" in export_csv.headers["content-type"]
+        assert "kind,id,session_id" in export_csv.text
 
         # 12. Evaluation
         eval_resp = client.get(f"/api/v1/investigations/{inv_id}/evaluation")

@@ -108,6 +108,7 @@ from app.api.routers import (  # noqa: E402
 )
 
 app.include_router(health.router, tags=["health"])
+app.include_router(health.router, prefix="/api/v1", tags=["health"])
 app.include_router(investigations.router, prefix="/api/v1", tags=["investigations"])
 app.include_router(datasets.router, prefix="/api/v1", tags=["datasets"])
 app.include_router(sessions.router, prefix="/api/v1", tags=["sessions"])

@@ -15,6 +15,9 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
   const [filterSeverity, setFilterSeverity] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const grp = selectedGroup?.group || selectedGroup;
+  const linkedFailures = selectedGroup?.failures || [];
+
   const filteredGroups = groups.filter((g) => {
     if (filterSeverity !== 'all' && g.severity !== filterSeverity) return false;
     if (searchTerm) {
@@ -67,7 +70,7 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
             <div className="p-4 text-center text-muted">No failure groups match filter.</div>
           ) : (
             filteredGroups.map((g) => {
-              const isSelected = selectedGroup?.group?.group_id === g.group_id;
+              const isSelected = (selectedGroup?.group?.group_id || selectedGroup?.group_id) === g.group_id;
               return (
                 <div
                   key={g.group_id}
@@ -97,7 +100,7 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
             <Spinner size={32} />
             <p>Loading group intelligence...</p>
           </div>
-        ) : !selectedGroup || !selectedGroup.group ? (
+        ) : !grp || !grp.group_id ? (
           <EmptyState
             icon={Layers}
             title="Select a Failure Group"
@@ -108,24 +111,24 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
             {/* Header */}
             <div className="detail-header-card">
               <div className="detail-top-row">
-                <span className="group-id-pill">{selectedGroup.group.group_id}</span>
+                <span className="group-id-pill">{grp.group_id}</span>
                 <div className="header-badges">
-                  <SeverityBadge severity={selectedGroup.group.severity} />
-                  <StatusBadge status={selectedGroup.group.status} type="failure" />
+                  <SeverityBadge severity={grp.severity} />
+                  <StatusBadge status={grp.status} type="failure" />
                 </div>
               </div>
-              <h1 className="detail-title">{selectedGroup.group.title}</h1>
+              <h1 className="detail-title">{grp.title}</h1>
               <div className="detail-meta-strip">
                 <span>
-                  Failure Type: <strong>{selectedGroup.group.failure_type.replace(/_/g, ' ')}</strong>
+                  Failure Type: <strong>{grp.failure_type.replace(/_/g, ' ')}</strong>
                 </span>
                 <span>·</span>
                 <span>
-                  Occurrences: <strong>{selectedGroup.group.occurrence_count} sessions</strong>
+                  Occurrences: <strong>{grp.occurrence_count} sessions</strong>
                 </span>
                 <span>·</span>
                 <span>
-                  Confidence: <strong>{Math.round(selectedGroup.group.confidence * 100)}%</strong>
+                  Confidence: <strong>{Math.round((grp.confidence || 0) * 100)}%</strong>
                 </span>
               </div>
             </div>
@@ -135,12 +138,12 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
               <h3>
                 <ShieldAlert size={16} /> Pattern Summary
               </h3>
-              <p className="detail-body-text">{selectedGroup.group.description}</p>
-              {selectedGroup.group.common_signals && selectedGroup.group.common_signals.length > 0 && (
+              <p className="detail-body-text">{grp.description}</p>
+              {grp.common_signals && grp.common_signals.length > 0 && (
                 <div className="signals-row">
                   <span className="signals-label">Common Rule Signals:</span>
                   <div className="tag-cloud">
-                    {selectedGroup.group.common_signals.map((sig) => (
+                    {grp.common_signals.map((sig) => (
                       <SignalTag key={sig} signal={sig} />
                     ))}
                   </div>
@@ -154,21 +157,21 @@ export function FailureGroupsView({ groups, selectedGroup, onSelectGroup, onSele
                 <Lightbulb size={18} className="text-warning" />
                 <strong>Where Engineers Should Look First</strong>
               </div>
-              <p className="callout-body">{selectedGroup.group.recommendation}</p>
+              <p className="callout-body">{grp.recommendation || grp.ai_summary || grp.description}</p>
             </div>
 
             {/* Evidence-Linked Member Failures */}
             <div className="panel detail-section">
               <div className="section-header-row">
-                <h3>Member Failures ({selectedGroup.failures?.length || 0})</h3>
+                <h3>Member Failures ({linkedFailures.length})</h3>
                 <span className="text-muted text-xs">Linked via session evidence</span>
               </div>
 
               <div className="member-failures-list">
-                {!selectedGroup.failures || selectedGroup.failures.length === 0 ? (
+                {linkedFailures.length === 0 ? (
                   <p className="text-muted p-3">No member failure details available.</p>
                 ) : (
-                  selectedGroup.failures.map((f) => (
+                  linkedFailures.map((f) => (
                     <div
                       key={f.failure_id}
                       className="member-failure-card"

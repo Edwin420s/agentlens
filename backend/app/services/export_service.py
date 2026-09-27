@@ -41,3 +41,41 @@ async def export_investigation(investigation_id: str, fmt: str = "json") -> Expo
         records=len(records),
         data=records,
     )
+
+
+async def export_investigation_csv(investigation_id: str) -> str:
+    import io, csv
+    failures = await fail_repo.list_all_failures(investigation_id)
+    groups = await fg_repo.list_groups(investigation_id)
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["kind", "id", "session_id", "type", "severity", "confidence", "title", "summary_or_description", "status"])
+
+    for f in failures:
+        writer.writerow([
+            "failure",
+            f.get("failure_id", ""),
+            f.get("session_id", ""),
+            f.get("failure_type", ""),
+            f.get("severity", ""),
+            f.get("confidence", ""),
+            f.get("title", ""),
+            f.get("summary", ""),
+            f.get("status", "")
+        ])
+
+    for g in groups:
+        writer.writerow([
+            "group",
+            g.get("group_id", ""),
+            f"{len(g.get('session_ids', []))} sessions",
+            g.get("failure_type", ""),
+            g.get("severity", ""),
+            g.get("confidence", ""),
+            g.get("title", ""),
+            g.get("description", ""),
+            g.get("status", "")
+        ])
+
+    return output.getvalue()
